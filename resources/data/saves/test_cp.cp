@@ -1,0 +1,6 @@
+BAD
+BIL
+BAIL
+AFP
+None
+None

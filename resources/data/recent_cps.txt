@@ -1,0 +1,8 @@
+resources/data/saves/standard.cp
+resources/data/saves/general2.cp
+resources/data/saves/basic_control_panel.cp
+C:/Data/MGadsden/Work/ProgramProjects/MGSS/resources/data/saves/basic_control_panel.cp
+resources/data/saves/general3.cp
+resources/data/saves/general.cp
+resources/data/saves/test_cp.cp
+resources/data/saves/basic_control_panel.cp

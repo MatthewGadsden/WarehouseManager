@@ -1,0 +1,9 @@
+WFP
+WRFP
+BIL
+AFP
+RAFP
+BAIL
+BAD
+None
+None

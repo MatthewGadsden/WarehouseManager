@@ -1,0 +1,4 @@
+spotlight/
+
+output/*
+!output/.gitkeep

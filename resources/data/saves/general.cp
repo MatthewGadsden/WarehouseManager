@@ -1,0 +1,6 @@
+AFP
+BIL
+BAD
+BAIL
+WFP
+None
