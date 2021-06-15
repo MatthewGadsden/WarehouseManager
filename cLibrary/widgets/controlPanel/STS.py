@@ -15,7 +15,7 @@ class STS(DispWidgetFrame):
         max_slots = 0
         empty = []
         aisles = []
-        for area in self.controller.areas:
+        for area in self.controller.areas.values():
             e = len(dayxhits_sort_1_4(area))
             if e > 0:
                 empty.append(e)

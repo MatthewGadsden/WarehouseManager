@@ -3,6 +3,7 @@ import PIL.ImageTk, PIL.Image, copy, shutil
 from tkinter.filedialog import *
 from cLibrary.guis.popups.ErrorWindow import ErrorWindow
 from cLibrary.widgets.InfoHover import InfoHover
+from tkinter import *
 
 
 class ChooseNewWarehouse(Toplevel):
@@ -51,7 +52,10 @@ class ChooseNewWarehouse(Toplevel):
             info_hover.place(x=x + 360 + 20, y=y, height=20, width=20)
             return item_entry
 
-        titles = [("item file", "file containing item data"), ("slot file", "file containing slot data"), ("stock file", "file containing info on current stock"), ("hits file", "file for hits history")]
+        titles = [("item file", "file containing item data\n(WISE > Reports > Export > Item)"),
+                  ("slot file", "file containing slot data\n(WISE > Reports > Export > Slot)"),
+                  ("stock file", "file containing info on current stock\n(WISE > Reports > Export > Stock)"),
+                  ("hits file", "file for hits history\n(WISE > Reports > Movement > Hits and Picks)")]
         x = 20
         y = 60
         self.entries = []

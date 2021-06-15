@@ -121,23 +121,24 @@ class MGCons(WidgetWindow):
         """
         self.output.r_insert("Working out Consolidations...\n")
         self.output.update()
-        cons = ground_con(area, self.controller.bay_range, self.controller.gap)
+        cons = ground_con(area, self.controller.bay_range, self.controller.gap, self.controller.hp)
 
-
-        for i in cons[0]:
+        report = []
+        for i in cons:
+            temp = []
             for idx, a in enumerate(i):
-                i[idx] = i[idx].spot_id
-        for i in cons[1]:
-            for idx, a in enumerate(i):
-                i[idx] = i[idx].spot_id
+                i[idx] = a.spot_id
+                temp.append(a.aisle)
+                temp.append(a.bay)
+                temp.append(a.level)
+                temp.append(a.position)
+                temp.append("")
+            report.append(temp)
 
-        for idx, a in enumerate(cons[0]):
-            cons[0][idx] = intersperse(cons[0][idx], "")
-        for idx, a in enumerate(cons[1]):
-            cons[1][idx] = intersperse(cons[1][idx], "")
+        for idx, a in enumerate(cons):
+            cons[idx] = intersperse(cons[idx], "")
 
-        df = pd.DataFrame(cons[0], columns=["Slot1", "Check1","Slot2", "Check2","Slot3", "Check3"])
-        df2 = pd.DataFrame(cons[1], columns=["Slot1", "Check1", "Slot2", "Check2"])
+        df = pd.DataFrame(report, columns=["Aisle", "Bay", "Level", "Position", "Check1", "Aisle", "Bay", "Level", "Position", "Check2"])
 
         now = datetime.datetime.now()
         date = "{0}-{1}-{2}".format(now.day, now.month, now.year)
@@ -145,8 +146,7 @@ class MGCons(WidgetWindow):
         self.file_path = "resources/output/" + output
         writer = pd.ExcelWriter(self.file_path)
 
-        df.to_excel(writer, 'Sheet1')
-        df2.to_excel(writer, 'Sheet2')
+        df.to_excel(writer, 'Sheet2')
         writer.save()
         self.output.i_insert("Consolidations done.")
 
@@ -159,6 +159,6 @@ class MGCons(WidgetWindow):
         vals = [*self.area_dict.values()]
         vals.sort(key=lambda x: x.aisle)
         for i in vals:
-            temp_con = ground_con(i)
-            self.output.i_insert("Aisle {} has {} consolidations\n".format(i.aisle, len(temp_con[0]) + len(temp_con[1])))
+            temp_con = ground_con(i, self.controller.bay_range, self.controller.gap, self.controller.hp)
+            self.output.i_insert("Aisle {} has {} consolidations\n".format(i.aisle, len(temp_con)))
             self.output.update()

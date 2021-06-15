@@ -28,3 +28,6 @@ class Aisle(Area):
             self[bay] = Bay(slf, self.warehouse)
             self.count += 1
             self[bay].add_line(slf)
+
+    def get_bay(self, bay_code: str) -> Bay:
+        return self[bay_code]

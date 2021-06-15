@@ -8,10 +8,12 @@ This app was made to be used with a [WISE Warehouse System](http://www.wisesyste
 ## Setup and Use
 
 ### Setup (with demo warehouse)
-Run Main.py (will require pandas package)
+1) Locate the most recent stable tag (non pre-release version)
+2) Download and extract zip
+3) Run the .exe
 
 ### Use (with own WISE warehouse)
-1) Run Main.py (will require pandas package)
+1) Run the .exe (see setup)
 2) File -> New Warehouse 
 3) Add four report files (Downloaded from WISE export)
 4) Click create

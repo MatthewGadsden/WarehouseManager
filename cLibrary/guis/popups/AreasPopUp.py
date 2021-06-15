@@ -21,13 +21,13 @@ class AreasPopUp(StandardPopUp):
         """
         self.area_dict = {}
 
-        for area in self.controller.areas:
+        for area in self.controller.areas.values():
             self.area_dict[area.area_name] = area
 
         self.combo_options = [key for key in self.area_dict]
         self.start_val = StringVar(self)
         try:
-            self.start_val.set(self.controller.areas[0].area_name)
+            self.start_val.set(list(self.controller.areas.values())[0].area_name)
         except IndexError:
             self.start_val.set("")
 
@@ -60,14 +60,14 @@ class AreasPopUp(StandardPopUp):
         """
         try:
             area = self.area_dict[self.start_val.get()]
-            self.controller.areas.remove(area)
+            self.controller.areas.pop(area.area_name, None)
             self.area_dict.pop(self.start_val.get())
             self.combo_options = [key for key in self.area_dict]
         except KeyError as e:
             ErrorWindow(self, e, 'U002')
 
         try:
-            self.start_val.set(self.controller.areas[0].area_name)
+            self.start_val.set(list(self.controller.areas.values())[0].area_name)
         except IndexError as e:
             self.start_val.set("")
 
@@ -86,16 +86,16 @@ class AreasPopUp(StandardPopUp):
         :return: None
         """
         a_names = []
-        for a in self.controller.areas:
+        for a in self.controller.areas.values():
             a_names.append(a.area_name)
             a.error_check(area)  # check for any overlap errors
         if area.area_name in a_names:
             raise ValueError('Area Name Error: Area name is duplicated, use different area name')
 
-        self.controller.areas.append(area)
+        self.controller.areas[area.area_name] = area
         self.area_dict[area.area_name] = area
         self.combo_options = [key for key in self.area_dict]
-        self.start_val.set(self.controller.areas[0].area_name)
+        self.start_val.set(list(self.controller.areas.values())[0].area_name)
         self.combo['values'] = self.combo_options
         self.combo['textvariable'] = self.start_val
 
@@ -106,11 +106,11 @@ class AreasPopUp(StandardPopUp):
         """
         self.area_dict = {}
 
-        for area in self.controller.areas:
+        for area in self.controller.areas.values():
             self.area_dict[area.area_name] = area
 
         self.combo_options = [key for key in self.area_dict]
         self.start_val = StringVar(self)
-        self.start_val.set(self.controller.areas[0].area_name)
+        self.start_val.set(list(self.controller.areas.values())[0].area_name)
         self.combo['values'] = self.combo_options
         self.combo['textvariable'] = self.start_val

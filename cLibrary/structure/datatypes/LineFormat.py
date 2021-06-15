@@ -15,7 +15,7 @@ class SltLF(LF):
 
         self.loccode = line[indexing['loccode']].replace(" ", "")
         self.aisle = line[indexing['aisle']].replace(" ", "").zfill(2)
-        self.bay = line[indexing['bay']].replace(" ", "").zfill(2)
+        self.bay = line[indexing['bay']].replace(" ", "")
         self.level = line[indexing['level']].replace(" ", "")
         self.position = line[indexing['position']].replace(" ", "")
         self.id = self.aisle + self.bay + self.level + self.position
@@ -24,9 +24,14 @@ class SltLF(LF):
         if line[indexing['activ']] != "N":
             self.active = True
 
-        self.type = "P" if line[indexing['okpickslot']].replace(" ", "") == "T" else "R"
+        self.suits_pick_face = line[indexing['okpickslot']].replace(" ", "") == "T"
         self.status = line[indexing['frzstock']]
-        self.ispickslot = True if line[indexing['ispickslot']] == "T" else False
+        self.is_pick_slot = line[indexing['ispickslot']] == "T"
+        self.suits_multi_pick = line[indexing['multiitmpk']] == "T"
+
+        self.height = line[indexing['shgt']]
+        self.width = line[indexing['width']]
+        self.depth = line[indexing['sdepth']]
 
 
 class ILF(LF):
@@ -66,7 +71,7 @@ class StkLF(LF):
         self.item_id = line[indexing['sitm']].replace(" ", "")
         self.loccode = line[indexing['loccode']].replace(" ", "")
         self.aisle = line[indexing['aisle']].replace(" ", "").zfill(2)
-        self.bay = line[indexing['bay']].replace(" ", "").zfill(2)
+        self.bay = line[indexing['bay']].replace(" ", "")
         self.level = line[indexing['level']].replace(" ", "")
         self.position = line[indexing['position']].replace(" ", "")
         self.id = self.aisle + self.bay + self.level + self.position
@@ -81,5 +86,5 @@ class HLF(LF):
         line = line.strip('\n').replace('"', '').replace(" ", "").split(",")
         self.item_id = line[indexing['item']]
         self.hits = float(line[indexing['hits']])
-        self.avehitsday = float(line[indexing['avehitsday']])
+        self.avehitsday = float(line[indexing['aveunitday']])
         self.dayshit = float(line[indexing['dayshit']])

@@ -1,5 +1,6 @@
 from cLibrary.structure.warehouse.Area import Area
-from cLibrary.structure.warehouse.PickSlot import PickSlot, ReserveSlot
+from cLibrary.structure.warehouse.Slot import Slot
+from typing import List, Set, Union, Optional
 import math
 import random
 
@@ -19,86 +20,62 @@ class Level(Area):
         if postition in self:
             raise Exception("There is no way this could possibly occur within the warehouse, contact admin urgently")
         else:
-            if slf.type == "R":
-                self[postition] = ReserveSlot(slf, self.warehouse)
-            elif slf.type == "P":
-                self[postition] = PickSlot(slf, self.warehouse)
-                self.count += 1
+            self[postition] = Slot(self.warehouse, slf)
+            self.count += 1
 
     def get_filled_pick_slots_count(self):
         e = 0
         for slot in self:
-            if slot.type == "P":
-                if slot.item is not None:
+            if slot.suits_pick_face:
+                if slot.allocations:
                     e += 1
         return e
 
     def get_empty_pick_slots_count(self):
         e = 0
         for slot in self:
-            if slot.type == "P":
-                if slot.item is None:
+            if slot.suits_pick_face:
+                if not slot.allocations:
                     e += 1
         return e
-
-    def get_best_avehitsday_aux(self, bestList, used_slots):
-        """
-        edit to the best_avehistday auxiliary function, since this is the smallest type of area in a warehouse
-        :param bestList: list of the best slots found so far
-        :param used_slots: Used slots, so dont find these
-        :return: best slot not yet found by the function
-        """
-        best_slot = self[0]
-        for slot in self:
-            if (slot not in bestList) and (slot not in used_slots):
-                slot_best = slot.get_item_avehitsday()
-                best_best = best_slot.get_item_avehitsday()
-                if not (isinstance(best_best, float) or isinstance(best_best, int)):
-                    best_slot = slot
-                elif isinstance(slot_best, int) or isinstance(slot_best, float):
-                    if slot_best > best_best:
-                        best_slot = slot
-        if best_slot.get_item_avehitsday() is None or best_slot in bestList or best_slot in used_slots:
-            return None
-        return best_slot
 
     def get_filled_pick_slots(self):
         filled = []
         for spot in self:
-            if spot.type == "P":
-                if spot.item is not None:
+            if spot.suits_pick_face:
+                if spot.allocations:
                     filled.append(spot)
         return filled
 
     def get_pick_slots(self, filt=None):
         slots = []
         for spot in self:
-            if spot.type == "P":
+            if spot.suits_pick_face:
                 if filt is None:
                     slots.append(spot)
                 elif filt(spot):
                     slots.append(spot)
         return slots
 
-    def get_reserve_slots(self):
+    def get_reserve_slots(self) -> List[Slot]:
         slots = []
         for spot in self:
-            if spot.type == "R":
+            if not spot.suits_pick_face:
                 slots.append(spot)
         return slots
 
-    def get_best_hits(self):
+    def get_best_hits(self) -> float:
         best_hits = None
         for spot in self:
-            if spot.type == "P":
+            if spot.is_pick_face:
                 if best_hits is None:
-                    if spot.item is not None:
-                        best_hits = spot.item.avehitsday
+                    if spot.allocations:
+                        best_hits = spot.get_item_avehitsday()
                     else:
                         best_hits = None
                 else:
-                    if spot.item is not None:
-                        best_hits = max(best_hits, spot.item.avehitsday)
+                    if spot.allocations:
+                        best_hits = max(best_hits, spot.get_item_avehitsday())
                     else:
                         pass
         return best_hits
@@ -114,8 +91,8 @@ class Level(Area):
     def aux_average_hits(self):
         e = 0
         for slot in self:
-            if slot.type == "P":
-                if slot.item is not None:
+            if slot.suits_pick_face:
+                if slot.allocations:
                     e += slot.get_item_avehitsday()
         return e
 
@@ -139,3 +116,6 @@ class Level(Area):
             if spot.spot_id == area_id:
                 return spot
         return area
+
+    def get_slot(self, position_code: str) -> Slot:
+        return self[position_code]

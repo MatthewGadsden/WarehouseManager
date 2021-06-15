@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from typing import List, Tuple, Set
+from typing import List, Tuple, Set, Optional
 
 
 def open_excel(file_path, output=None):
@@ -33,15 +33,18 @@ def create_xlsx(data: List, cols: List, outfile: str) -> str:
     return outfile
 
 
-def data_to_dataframe(data: List, cols: List) -> pd.DataFrame:
+def data_to_dataframe(data: List, cols: List, sheet_name=None) -> Tuple[Optional[str], pd.DataFrame]:
     df = pd.DataFrame(data, columns=cols)
-    return df
+    if sheet_name is not None:
+        sheet_name = sheet_name.replace('/', '.')
+    return sheet_name, df
 
 
-def dataframes_to_xlsx(dfs: List[pd.DataFrame], outfile: str) -> str:
+def dataframes_to_xlsx(dfs: List[Tuple[Optional[str], pd.DataFrame]], outfile: str) -> str:
     writer = pd.ExcelWriter(xlsx_ft(outfile))
     for i, df in enumerate(dfs):
-        df.to_excel(writer, 'Sheet_'+str(i+1))
+        sheet_name = str(df[0]) if df[0] is not None else ('Sheet_' + str(i + 1))
+        df[1].to_excel(writer, sheet_name)
     writer.save()
     return outfile
 

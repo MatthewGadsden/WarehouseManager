@@ -89,7 +89,7 @@ class ImportCategories(StandardPopUp):
 
         for x in data:
             item_string = x[0].lstrip()
-            item = self.controller.warehouse.item_list.get(item_string)
+            item = self.controller.warehouse.item_list[item_string]
             total_count += 1
             if item is not None:
                 added_count += 1

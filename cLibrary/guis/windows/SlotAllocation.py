@@ -18,16 +18,16 @@ class SlotAllocation(WidgetWindow):
         self.area_dict = {}
         self.file_path = None
 
-        for area in self.areas:
+        for area in self.areas.values():
             self.area_dict[area.area_name] = area
 
         self.combo_options = [key for key in self.area_dict]
 
         self.start_val = StringVar(self)
-        self.start_val.set(self.areas[0].area_name)
+        self.start_val.set(list(self.areas.values())[0].area_name)
 
         self.start_val2 = StringVar(self)
-        self.start_val2.set(self.areas[0].area_name)
+        self.start_val2.set(list(self.areas.values())[0].area_name)
 
         # create sort areas widgets
         bg = Label(self)
@@ -141,7 +141,7 @@ class SlotAllocation(WidgetWindow):
         """
         area_nums = []
         self.output.r_insert("")
-        for area in self.areas:
+        for area in self.areas.values():
             self.output.i_insert(" " + str(area.area_name.title()) + " has " + str(len(sort(area))) + " swaps to make\n")
             self.output.update()
 

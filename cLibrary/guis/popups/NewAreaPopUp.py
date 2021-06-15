@@ -121,7 +121,7 @@ class NewAreaPopUp(StandardPopUp):
                 self.area.area_name = self.name_var.get()
                 self.master.add_new(self.area)
             else:
-                for area in self.controller.areas:
+                for area in self.controller.areas.values():
                     if area.area_name != self.area.area_name:
                         self.area.error_check(area)
                 self.area.area_name = self.name_var.get()
@@ -134,9 +134,10 @@ class NewAreaPopUp(StandardPopUp):
         super(NewAreaPopUp, self).on_close()
         if cancel:
             saved_area = self.load_area(self.save_string)
-            for i, area in enumerate(self.controller.areas):
+            for area in self.controller.areas.values():
                 if area.area_name == saved_area.area_name:
-                    self.controller.areas[i] = saved_area
+                    self.controller.areas[area.area_name] = saved_area
+                    break
             self.master.update_combo()
 
     @staticmethod

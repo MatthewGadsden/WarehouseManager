@@ -27,6 +27,7 @@ from cLibrary.structure.warehouse.CustomArea import CustomArea
 from cLibrary.methods.AreaMethods import best_sort_1_4
 from cLibrary.guis.Controller import Controller
 import shutil
+from typing import List, Set, Union, Optional, Tuple
 
 
 class MGSlotSystem(Tk):

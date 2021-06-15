@@ -2,7 +2,7 @@ from typing import List, Tuple, Set
 from cLibrary.structure.item.Item import Item
 from cLibrary.structure.warehouse.Warehouse import Warehouse
 from cLibrary.structure.warehouse.Area import Area
-from cLibrary.structure.warehouse.PickSlot import PickSlot
+from cLibrary.structure.warehouse.Slot import Slot
 from cLibrary.methods.general import create_xlsx, xlsx_ft, data_to_dataframe, dataframes_to_xlsx
 from cLibrary.methods.slotReport import pick_slot_report
 import math
@@ -55,8 +55,10 @@ def distro_setup(distro_data: List[Tuple[Item, int]], area: Area, warehouse: War
         data.append(distro_data[i] + (facing_w,))
         item_list.append(itm)
 
-    pick_slots = area.get_pick_slots()  # type: List[PickSlot]
-    pick_slots.sort(key=lambda x: x.spot_id)
+    pick_slots = area.get_pick_slots()  # type: List[Slot]
+    pick_slots.sort(key=lambda x: x.position)
+    pick_slots.sort(key=lambda x: x.level)
+    pick_slots.sort(key=lambda x: int(x.bay))
 
     bay = []
     bays = []
@@ -76,10 +78,12 @@ def distro_setup(distro_data: List[Tuple[Item, int]], area: Area, warehouse: War
             bay += 1
             current_width = 0
         current_width += item[2]
-        data[i] = [item[0].item_id, item[1], item[2], bays[bay].pop().spot_id]
+        location = bays[bay].pop()
+        data[i] = [item[0].item_id, item[1], item[2],
+                   location.aisle, location.bay, location.level, location.position]
 
     output_file = xlsx_ft(output_file)
-    dfs = [data_to_dataframe(data, ['ITEM ID', 'QTY', 'FACING WIDTH', 'ASSIGNED SLOT']),
-           pick_slot_report(item_list)]  # type: List
+    dfs = [data_to_dataframe(data, ['ITEM ID', 'QTY', 'FACING WIDTH', 'Aisle', 'Bay', 'Level', 'Position']),
+           pick_slot_report(item_list)]
     dataframes_to_xlsx(dfs=dfs, outfile=output_file)
     return output_file

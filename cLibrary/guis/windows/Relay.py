@@ -90,9 +90,9 @@ class Relay(WidgetWindow):
 
         areas = self.controller.areas
         area_dict = {}
-        for area in areas:
+        for area in areas.values():
             area_dict[area.area_name] = area
-        area_combo_options = [key.area_name for key in areas]
+        area_combo_options = [key.area_name for key in areas.values()]
 
         area_combo = Combobox(self, values=area_combo_options, font="bold 10", state="readonly")
         area_combo.place(x=30, y=190, width=w, height=30)
@@ -101,7 +101,7 @@ class Relay(WidgetWindow):
         area_title2 = Label(self, text="Excess Area", font="bold 15")
         area_title2.place(x=30, y=230, width=w, height=40)
 
-        area_combo_options2 = [key.area_name for key in areas]
+        area_combo_options2 = [key.area_name for key in areas.values()]
 
         area_combo2 = Combobox(self, values=area_combo_options2, font="bold 10", state="readonly")
         area_combo2.place(x=30, y=270, width=w, height=30)

@@ -2,7 +2,7 @@ from cLibrary.structure.warehouse.Area import Area
 from cLibrary.structure.warehouse.Aisle import Aisle
 from cLibrary.structure.warehouse.Bay import Bay
 from cLibrary.structure.warehouse.Level import Level
-from cLibrary.structure.warehouse.PickSlot import PickSlot, ReserveSlot
+from cLibrary.structure.warehouse.Slot import Slot
 from cLibrary.structure.item.Item import Item
 
 from cLibrary.methods.general import *
@@ -15,7 +15,7 @@ from typing import Set, List, Tuple
 
 
 def check_nested_area(area1, area2, warehouse):
-    if not isinstance(area1, (Aisle, Bay, Level, PickSlot)) and not isinstance(area2, (Aisle, Bay, Level, PickSlot)):
+    if not isinstance(area1, (Aisle, Bay, Level, Slot)) and not isinstance(area2, (Aisle, Bay, Level, Slot)):
         raise TypeError("area must be of Type Aisle, Bay, Level")
 
     area1_len = len(area1.spot_id)
@@ -41,13 +41,13 @@ def sorted_1_4(area, method):
     """
     Make sure best items are on the 2nd and 3rd levels of picking
     """
-    area_spots = area.get_pick_slots()  # type: List[PickSlot]
-    cat_items = area.get_filled_pick_slots()  # type: List[PickSlot]
+    area_spots = area.get_pick_slots()  # type: List[Slot]
+    cat_items = area.get_filled_pick_slots()  # type: List[Slot]
 
-    l_23 = area.get_pick_slots(filt=lambda spot: spot.level in ["2", "3"])  # type: List[PickSlot]
+    l_23 = area.get_pick_slots(filt=lambda spot: spot.level in ["2", "3"])  # type: List[Slot]
 
     n_23 = len(l_23)
-    cat_items.sort(key=lambda slot: slot.item.avehitsday)
+    cat_items.sort(key=lambda slot: slot.get_item_avehitsday())
 
     best_items = cat_items[:n_23]
     worst_items = cat_items[n_23:]
@@ -66,8 +66,8 @@ def sorted_1_4(area, method):
             i -= 1
         i += 1
 
-    l_23_empty = area.get_pick_slots(filt=lambda spot: spot.level in ["2", "3"] and spot.item is None)  # type: List[PickSlot]
-    worst_areas = l_23_empty + worst_items  # type: List[PickSlot]
+    l_23_empty = area.get_pick_slots(filt=lambda spot: spot.level in ["2", "3"] and not spot.allocations)  # type: List[Slot]
+    worst_areas = l_23_empty + worst_items  # type: List[Slot]
 
     worst_areas.sort(key=lambda x: x.spot_id)
     best_items.sort(key=lambda x: x.spot_id)
@@ -87,81 +87,38 @@ def dayxhits_sort_1_4(area):
     return sorted_1_4(area, Area.get_best_dayxhits)
 
 
-def ground_con(area, bay_range=10, gap=10):
+def ground_con(area, bay_range=10, gap=5, hp=80) -> List[List[Slot]]:
     bay_range = int(bay_range)
     gap = int(gap)
-    gap /= 100
-    gap += 1
 
     if not isinstance(area, Area):
         raise TypeError()
-    total_cons = []
-    cons = []
 
-    reserves = area.get_reserve_slots()
+    reserves = area.get_reserve_slots()     # type: List[ReserveSlot]
     reserves.sort(key=lambda x: x.spot_id)
+    for i in reserves:
+        i.get_attrs(gap, hp)
+
+    gap /= 100
+    gap += 1
 
     _ = 0  # removing the empty reserve slots
     while _ < len(reserves):
-        if reserves[_].items == []:
+        if not reserves[_].stock_records:
             reserves.pop(_)
             _ -= 1
         _ += 1
 
     i = 0
+    consolidations = []
     while i < len(reserves):
-        breaking = False
-        s1 = reserves[i]
-        if not isinstance(s1, ReserveSlot):
-            raise TypeError()
-
-        j = i + 1
-        while j < len(reserves) and (int(s1.bay) > (int(reserves[j].bay) - bay_range)):
-            s2 = reserves[j]
-            if not isinstance(s2, ReserveSlot):
-                raise TypeError()
-
-            if (s1.s_current_width + s2.s_current_width) < s1.s_width:
-                k = j + 1
-                while (k < len(reserves)) and ((int(s1.bay) > (int(reserves[k].bay) - bay_range))):
-                    s3 = reserves[k]
-                    if not isinstance(s3, ReserveSlot):
-                        raise TypeError()
-
-                    if (s1.s_current_width + s2.s_current_width + s3.s_current_width) < s1.s_width:
-                        cons.append([s1, s2, s3])
-                        breaking = True
-                        reserves.pop(k), reserves.pop(j), reserves.pop(i)
-                        i -= 1
-                        break
-                    k += 1
-            if breaking:
-                break
+        j = i
+        current_slot = reserves.pop(i)
+        current_con = [current_slot, ]
+        while j < len(reserves) and len(current_con) < 2 and j < i + bay_range + 1:
+            if current_slot.used_width + reserves[j].used_width < current_slot.s_width:
+                current_con.append(reserves.pop(j))
+                consolidations.append(current_con)
             j += 1
-        i += 1
-    total_cons.append(cons)
 
-    cons2 = []
-    i = 0
-    while i < len(reserves):
-        s1 = reserves[i]
-        if not isinstance(s1, ReserveSlot):
-            raise TypeError()
-
-        j = i + 1
-        while j < len(reserves) and (int(s1.bay) > (int(reserves[j].bay) - bay_range)):
-            s2 = reserves[j]
-            if not isinstance(s2, ReserveSlot):
-                raise TypeError()
-
-            if (s1.s_current_width + s2.s_current_width) < s1.s_width:
-                breaking = True
-                cons2.append([s1, s2])
-                reserves.pop(i), reserves.pop(j-1)
-                i -= 1
-                break
-            j += 1
-        i += 1
-    total_cons.append(cons2)
-    return total_cons
-
+    return consolidations

@@ -1,6 +1,6 @@
 from tkinter import *
 from cLibrary.structure.warehouse.Area import Area
-from cLibrary.structure.warehouse.PickSlot import PickSlot
+from cLibrary.structure.warehouse.Slot import Slot
 from cLibrary.structure.warehouse.Level import Level
 from cLibrary.structure.warehouse.Bay import Bay
 from cLibrary.structure.warehouse.Aisle import Aisle
@@ -18,17 +18,17 @@ class SelectArea(Toplevel):
         :param area: Warehouse location to view into
         :param selecting: Boolean (are areas being selected)
         """
-        if not isinstance(area, (Area, PickSlot)):
+        if not isinstance(area, (Area, Slot)):
             raise TypeError("area must be a type of Area")
         super(SelectArea, self).__init__(master)
         self.selecting = selecting
-        if isinstance(area, PickSlot):
+        if isinstance(area, Slot):
             PickSlotSettings(master, area)
             self.destroy()
         else:
             self.area = area.get_sorted_list()
             if isinstance(area, Level):
-                self.area.sort(key=lambda x: int(x.pick_slot))
+                self.area.sort(key=lambda x: int(x.position))
             else:
                 self.area.sort(key=lambda x: x.spot_id)
             self.grid_row = 0
@@ -71,7 +71,7 @@ class SelectArea(Toplevel):
         for spot in self.area:
             fill = 1
             emp = 1
-            if not isinstance(spot, PickSlot):
+            if not isinstance(spot, Slot):
                 fill = spot.get_filled_pick_slots_count()
                 emp = spot.get_empty_pick_slots_count()
             if fill != 0 or emp != 0:
@@ -82,8 +82,8 @@ class SelectArea(Toplevel):
                     spot_str = spot.bay
                 elif isinstance(spot, Level):
                     spot_str = spot.level
-                elif isinstance(spot, PickSlot):
-                    spot_str = spot.pick_slot
+                elif isinstance(spot, Slot):
+                    spot_str = spot.position
 
                 label = Button(self, text=str(type(spot).__name__)+" "+spot_str, relief="groove", bg="thistle1", width=13,
                                command=lambda e=spot: SelectArea(self, e, self.selecting))

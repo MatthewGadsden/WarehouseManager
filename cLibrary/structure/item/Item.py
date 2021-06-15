@@ -1,6 +1,5 @@
 from cLibrary.structure.datatypes.LineFormat import ILF
-
-import math
+from typing import List, Set, Union
 
 
 class Item:
@@ -9,18 +8,21 @@ class Item:
         # ['Urbane Quince+Blueberry 125ml Diffuser', 'Seasonal', 'DIFFUSER', nan, '125ml', nan,
         # 'URBA4', 'Urbane', 'SHAD', 'Shadows']
         self.item_id = ilf.item_id
-        self.carton = Carton(ilf.length_pc, ilf.width_pc, ilf.height_pc, ilf.weight_pc, ilf.units_pc)
-        self.inner = Inner(ilf.length_pi, ilf.width_pi, ilf.height_pi, ilf.weight_pi, ilf.units_pi)
-        self.unit = Unit(ilf.length_pu, ilf.width_pu, ilf.height_pu, ilf.weight_pu, 1)
         self.total_qty = ilf.qty
-        self.barcode1 = ilf.barcode1
-        self.barcode2 = ilf.barcode2
         self.hits = 0
         self.avehitsday = 0
         self.dayshit = 0
-        self.pick_slot = None  # will be None is not assigned a pick slot
         self.pmax = ilf.pmax
         self.lettrigger = ilf.lettrigger
+
+        self.carton = Carton(ilf.length_pc, ilf.width_pc, ilf.height_pc, ilf.weight_pc, ilf.units_pc)
+        self.inner = Inner(ilf.length_pi, ilf.width_pi, ilf.height_pi, ilf.weight_pi, ilf.units_pi)
+        self.unit = Unit(ilf.length_pu, ilf.width_pu, ilf.height_pu, ilf.weight_pu, 1)
+        self.barcode1 = ilf.barcode1
+        self.barcode2 = ilf.barcode2
+
+        self.allocations = []
+        self.stock_records = []
 
         if hl is not None and hl is not False:
             self.hits = hl.hits
@@ -39,20 +41,6 @@ class Item:
             return self.get_unit_vol()
 
         return vol
-
-
-class ReserveProduct:
-
-    def __init__(self, item, qty):
-        self.item_id = item.item_id
-        self.carton = item.carton
-        self.inner = item.inner
-
-        self.barcode1 = item.barcode1
-        self.barcode2 = item.barcode2
-
-        self.total_qty = qty
-        self.c_qty = math.ceil(qty / item.carton.units)
 
 
 class Packet:
@@ -116,9 +104,6 @@ class ItemList:
         self[item_id] = item
         self.count += 1
 
-    def get(self, key):
-        return self.items.get(key)
-
     def __contains__(self, item_id):
         return item_id in self.items
 
@@ -136,3 +121,6 @@ class ItemList:
 
     def __len__(self):
         return self.count
+
+    def get_item(self, item_id):
+        return self.items[item_id]

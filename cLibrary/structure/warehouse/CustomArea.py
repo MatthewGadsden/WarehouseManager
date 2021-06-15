@@ -40,7 +40,7 @@ class CustomArea(Area):
         self.spots[area.spot_id] = area
 
     def light_area_error(self, area):
-        if not isinstance(area, (Aisle, Bay, Level, CustomArea, PickSlot)):
+        if not isinstance(area, (Aisle, Bay, Level, CustomArea, Slot)):
             raise TypeError("area must be of Type Aisle, Bay, Level or another CustomArea")
 
     def __add__(self, other):

@@ -2,7 +2,7 @@ from cLibrary.guis.windows.WidgetWindow import *
 from cLibrary.widgets.ScrolledFrame import ScrolledFrame
 from typing import List, Tuple, Set, Optional
 from cLibrary.structure.item.Item import Item
-from cLibrary.widgets.ImportBox import ImportBox
+from cLibrary.widgets.FileImport import FileImport
 from cLibrary.widgets.WarehouseFrame import WarehouseFrame
 from cLibrary.structure.warehouse.Area import Area
 from cLibrary.guis.popups.SelectArea import SelectArea
@@ -79,7 +79,7 @@ class UploadDistro(WarehouseFrame):
         self.data = None
         self.distro_data = DistroData(self)     # type: DistroData
         self.title = Label(self, text="Upload Distro Data", relief='groove', bg='deep sky blue', )
-        self.imp_box = ImportBox(self, 'Distro File')
+        self.imp_box = FileImport(self, title='Distro File')
         self.info = Label(self, text="Format: [Item Code, Quantity]", relief='groove')
         self.upload_button = Button(self, text="Upload", relief='groove', bg='lime',
                                     command=lambda: self.imp_distro_file())
@@ -95,7 +95,7 @@ class UploadDistro(WarehouseFrame):
     def imp_distro_file(self):
         data = []   # type: List[Tuple[Item, int]]
         warehouse = self.get_controller().warehouse
-        with open(self.imp_box.get(), 'r') as f:
+        with open(self.imp_box.get(), 'r', encoding='utf-8-sig') as f:
             for line in f:
                 x = line.strip('\n').replace(' ', '').split(',')
                 itm = warehouse.item_list[x[0]] # type: Item
@@ -148,9 +148,9 @@ class AreaSelect(WarehouseFrame):
 
         self.areas = controller.areas
         self.area_dict = {}
-        for area in self.areas:
+        for area in self.areas.values():
             self.area_dict[area.area_name] = area
-        area_combo_options = [key.area_name for key in self.areas]
+        area_combo_options = [key.area_name for key in self.areas.values()]
 
         self.area_combo = Combobox(self, values=area_combo_options, font="bold 10", state="readonly")
         self.area_combo.set(area_combo_options[0])

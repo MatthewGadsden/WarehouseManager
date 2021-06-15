@@ -23,7 +23,7 @@ class WRFP(DispWidgetFrame):
         reserves = self.warehouse.get_reserve_slots()
         empty = 0
         for slot in reserves:
-            if not slot.items:
+            if not slot.stock_records:
                 empty += 1
         filled = len(reserves) - empty
         total = empty + filled

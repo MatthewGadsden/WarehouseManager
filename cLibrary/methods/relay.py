@@ -2,7 +2,7 @@ from cLibrary.structure.warehouse.Area import Area
 from cLibrary.structure.warehouse.Aisle import Aisle
 from cLibrary.structure.warehouse.Bay import Bay
 from cLibrary.structure.warehouse.Level import Level
-from cLibrary.structure.warehouse.PickSlot import PickSlot, ReserveSlot
+from cLibrary.structure.warehouse.Slot import Slot
 from cLibrary.structure.item.Item import *
 from typing import List, Tuple, Set
 from cLibrary.structure.datatypes.Category import Category
@@ -19,15 +19,15 @@ def relay(category, area, excess_area, controller, outfile):
 
     # Building the lists of pick slots to fill
     area_spots_23_b = area.get_pick_slots(
-        filt=lambda x: x.aisle in ["BB", ] and x.level in ["2", "3"] and x.pick_slot in ["1", "2", "3", "4"])  # type: List[PickSlot]
+        filt=lambda x: x.aisle in ["BB", ] and x.level in ["2", "3"] and x.position in ["1", "2", "3", "4"])  # type: List[Slot]
 
     area_spots_23_c = area.get_pick_slots(
-        filt=lambda x: x.aisle in ["CC", ] and x.level in ["2", "3"] and x.pick_slot in ["1", "2", "3", "4"])  # type: List[PickSlot]
+        filt=lambda x: x.aisle in ["CC", ] and x.level in ["2", "3"] and x.position in ["1", "2", "3", "4"])  # type: List[Slot]
 
     area_spots_14 = area.get_pick_slots(
-        filt=lambda x: x.level in ["4", ] and x.pick_slot in ["1", "2", "3", "4"])  # type: List[PickSlot]
+        filt=lambda x: x.level in ["4", ] and x.position in ["1", "2", "3", "4"])  # type: List[Slot]
 
-    excess_spots = excess_area.get_pick_slots()  # type: List[PickSlot]
+    excess_spots = excess_area.get_pick_slots()  # type: List[Slot]
 
     cat_items.sort(key=lambda x: x.get_inner_vol(), reverse=True)    # sorting items by volume (size)
     area_spots_23_b.sort(key=lambda x: x.spot_id, reverse=True) # sort B aisle in reverse
@@ -46,7 +46,7 @@ def relay(category, area, excess_area, controller, outfile):
     for spot in area_spots_14:
         print(spot.spot_id)
 
-    pairings = []   # type: List[Tuple[Item, PickSlot]]
+    pairings = []   # type: List[Tuple[Item, Slot]]
     while len(cat_items) > 0 and len(area_spots_23) > 0:
         pairings.append((cat_items.pop(0), area_spots_23.pop(0)))
 
@@ -55,8 +55,8 @@ def relay(category, area, excess_area, controller, outfile):
     sheet1 = []
 
     for item, slot in pairings:
-        sheet1.append([item.pick_slot.spot_id if item.pick_slot is not None else "No Location", item.item_id,
-                       item.pick_slot.qty if item.pick_slot is not None else 0, "", slot.spot_id, "", ])
+        sheet1.append(["No Location" if not item.allocations else item.allocations[0].location.spot_id, item.item_id,
+                       0 if not item.allocations else item.allocations[0].qty, "", slot.spot_id, "", ])
 
     df1 = pd.DataFrame(sheet1, columns=['Current Location', 'Item ID',
                                         'Qty', 'Qty Check', 'New Location', 'Moved Check', ])

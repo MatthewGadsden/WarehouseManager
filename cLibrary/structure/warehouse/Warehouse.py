@@ -96,3 +96,6 @@ class Warehouse(Area):
         item_id = stock_obj.item_id
         slot = self[stock_obj.aisle][stock_obj.bay][stock_obj.level][stock_obj.position]
         slot.assign_item(item_id, stock_obj)
+
+    def get_aisle(self, aisle_code: str) -> Aisle:
+        return self[aisle_code]

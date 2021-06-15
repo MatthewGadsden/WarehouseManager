@@ -24,3 +24,6 @@ class Bay(Area):
             self[level] = Level(slf, self.warehouse)
             self.count += 1
             self[level].add_line(slf)
+
+    def get_level(self, level_code: str) -> Level:
+        return self[level_code]

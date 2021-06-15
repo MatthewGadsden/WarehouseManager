@@ -2,7 +2,8 @@
 from tkinter import *
 from tkinter.font import *
 from cLibrary.methods.general import *
-from cLibrary.structure.datatypes.Category import CatList
+from cLibrary.structure.datatypes.Category import CatList, Category
+from cLibrary.structure.warehouse.CustomArea import CustomArea
 import tkinter.ttk as ttk
 
 
@@ -15,7 +16,7 @@ class Controller:
         :param warehouse: warehouse framework the system is running on
         """
         self.warehouse = warehouse
-        self.areas = []
+        self.areas = {}  # type: dict
         self.categories = CatList()
         self.master = master
 
@@ -118,7 +119,7 @@ class Controller:
                         current_cat = value
                         self.categories.add_category(value)
                     else:
-                        self.categories.add_item(self.warehouse.item_list.get(value), current_cat) if self.warehouse.item_list.get(value) is not None else "pass"
+                        self.categories.add_item(self.warehouse.item_list[value], current_cat) if self.warehouse.item_list[value] is not None else "pass"
 
     def load_areas(self):
         """
@@ -126,30 +127,20 @@ class Controller:
         :return:
         """
         from cLibrary.structure.warehouse.CustomArea import CustomArea
-        from cLibrary.guis.popups.ErrorWindow import ErrorWindow
         with open("resources/data/areas.wf", "r") as file:
-            areas = []
+            areas = {}
             for line in file:
                 line = line.strip("\n").split(",")
                 i = 1
                 while i < len(line):
-                    try:
-                        save_line = line[i]
-                        spot = self.warehouse.find_area(line[i])
-                        if spot is None:
-                            raise ValueError("Save File Error:\n\nSpot ID {} was found in save file, contact help is further "
-                                             "assistance is needed".format(save_line))
-                        line[i] = spot
-                    except Exception as e:
-                        line.pop(i)
-                        ErrorWindow(self.master, e, 'ZZZZ', e)
-                        i -= 1
+                    save_line = line[i]
+                    spot = self.warehouse.find_area(line[i])
+                    if spot is None:
+                        raise ValueError("Save File Error:\n\nSpot ID {} was found in save file, contact help is further "
+                                         "assistance is needed".format(save_line))
+                    line[i] = spot
                     i += 1
-                # try:
-                areas.append(CustomArea(line[1:], line[0], self.warehouse))
-                # except Exception as e:
-                #     print(e)
-                #     ErrorWindow(self.master, "Error creating area {}\n\nThis area has been removed".format(line[0]))
+                areas[line[0]] = (CustomArea(line[1:], line[0], self.warehouse))
         self.areas = areas
 
     def save_areas(self):
@@ -159,8 +150,9 @@ class Controller:
         """
         with open("resources/data/areas.wf", "w") as file:
             for area in self.areas:
-                file.write(area.area_name)
-                for spot in area:
+                a = self.areas[area]
+                file.write(a.area_name)
+                for spot in a:
                     file.write("," + spot.spot_id)
                 file.write("\n")
 
@@ -183,3 +175,9 @@ class Controller:
                   relief=[('active', 'groove'), ('pressed', 'sunken')])
         style.map("Custom.Treeview.Row",
                   relief=[('active', 'groove')])
+
+    def get_area(self, area_name: str) -> CustomArea:
+        return self.areas[area_name]
+
+    def get_category(self, cat_name: str) -> Category:
+        return self.categories['cat_name']

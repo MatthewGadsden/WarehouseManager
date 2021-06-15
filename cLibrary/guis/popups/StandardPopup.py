@@ -3,11 +3,13 @@ from cLibrary.methods.general import *
 import PIL.ImageTk, PIL.Image, copy, shutil
 from tkinter.filedialog import *
 from cLibrary.guis.Controller import Controller
+from typing import Union, Optional, Set, List
+from tkinter import *
 
 
 class StandardPopUp(Toplevel):
 
-    def __init__(self, master, controller=None, width=230, height=220, title=None, cen_win=None, icon=None, *args, **kwargs):
+    def __init__(self, master, controller: Controller = None, width=230, height=220, title=None, cen_win=None, icon=None, *args, **kwargs):
         """
         Build standard Popup
         :param master: Master window
@@ -23,7 +25,7 @@ class StandardPopUp(Toplevel):
         super(StandardPopUp, self).__init__(master, *args, **kwargs)
         self.load_config(width, height, cen_win, title, icon)
         self.config_loaded = False
-        self.controller = controller
+        self.controller = controller    # type: Controller
         self.load_display()
 
     def load_config(self, width, height, master, title, icon):

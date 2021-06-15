@@ -137,7 +137,7 @@ class Area:
         if num > max_i:
             num = max_i
 
-        filled.sort(key=lambda x: x.item.avehitsday, reverse=True)
+        filled.sort(key=lambda x: x.get_item_avehitsday(), reverse=True)
         best_list = filled[:num]
         return best_list
 
@@ -242,7 +242,7 @@ class Area:
     def get_reserve_slots(self):
         """
         Get list of reserve slots
-        :return: List[ReserveSlot]
+        :return: List[Slot]
         """
         slots = []
         for spot in self:

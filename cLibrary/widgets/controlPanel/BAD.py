@@ -29,8 +29,8 @@ class BAD(Frame):
             if hit > best:
                 best = hit
 
+        hits.sort(key=lambda x: x[0])
         self.w = (self.width/len(hits))//1
-
         for hit in hits:
             filled_ratio = (hit[1] / best * self.h) // 1
             OldRange = (best - 0)
