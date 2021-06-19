@@ -12,7 +12,6 @@ This app was made to be used with a [WISE Warehouse System](http://www.wisesyste
 
 ## 💻 Quick Setup
 
-### Setup (Demo Warehouse)
 1) Download and extract zip
 2) Install required packages:
 ```shell
