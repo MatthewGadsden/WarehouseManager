@@ -1,6 +1,11 @@
 <p align="center">
   <img alt="WMS" src="https://i.imgur.com/JydMRnL.png" width="70" />
 </p>
+<div align="center">
+  <img src="https://img.shields.io/badge/-Python-%233573a6"/>
+  <img src="https://img.shields.io/badge/-tkinter-orange"/>
+  <img src="https://img.shields.io/badge/-pandas-%23ff69b4"/>
+</div>
 <h1 align="center">
   Warehouse Management Tool
 </h1>
