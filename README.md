@@ -2,7 +2,7 @@
   <img alt="WMS" src="https://i.imgur.com/JydMRnL.png" width="70" />
 </p>
 <div align="center">
-  <img src="https://img.shields.io/badge/-Python-%233573a6"/>
+  <img src="https://img.shields.io/badge/-python-%233573a6"/>
   <img src="https://img.shields.io/badge/-tkinter-orange"/>
   <img src="https://img.shields.io/badge/-pandas-%23ff69b4"/>
 </div>
@@ -26,3 +26,12 @@ pip install -r requirements.txt
 ```shell
 python Main.py
 ```
+
+-----
+
+##  Background
+While working in a warehouse as a general labourer, it became apparent that the business had needs that were not being met by their current warehouse management system. 
+
+Having worked with their system I knew how to export the data from the system and manipulate it how the business needed. This quickly progressed into this small adhoc tool so the data manipulation was accessible to less technical employee's through a basic UI. There were reasons as to why I could not directly tap into their warehousing systems data, so dealing with csv exports was what I had to continue with unfortunately.
+
+This project was started when I was still in my first year of Uni, so if I had my time over again with this project it would look a lot different, and most definitely be implemented using different tech + frameworks. 
